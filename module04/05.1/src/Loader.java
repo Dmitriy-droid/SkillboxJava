@@ -7,7 +7,7 @@ public class Loader
         String text = "Вася заработал 8000 рублей, Петя - 7563 рубля, а Маша - 3000 рублей";
         System.out.println(text);
 
-        Pattern pattern = Pattern.compile("[0-9]{1,}");
+        Pattern pattern = Pattern.compile("[0-9]+");
         Matcher matcher = pattern.matcher(text);
 
         int total = 0;
