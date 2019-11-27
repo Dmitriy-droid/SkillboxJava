@@ -6,11 +6,14 @@ public class ToDoList {
     private static ArrayList<String> todoList;
 
 
-    Pattern patternAdd;
-    Pattern patternInsert;
-    Pattern patternEdit;
-    Pattern patternDel;
-    Matcher matcher;
+    Pattern patternAdd = Pattern.compile("^ADD\\s+(.+)");
+    Pattern patternInsert = Pattern.compile("^ADD\\s+(\\d+?)\\s+(.+)");
+    Pattern patternEdit = Pattern.compile("^EDIT\\s+(\\d+?)\\s+(.+)");
+    Pattern patternDel = Pattern.compile("^DELETE\\s+(\\d+?)$");
+    Matcher addMatcher;
+    Matcher insertMatcher;
+    Matcher editMatcher;
+    Matcher delMatcher;
 
     ToDoList() {
         todoList = new ArrayList<String>() {{
@@ -19,60 +22,39 @@ public class ToDoList {
             add("Покормить кошку");
             add("Заправить машину");
         }};
-
-        patternAdd = Pattern.compile("^ADD\\s+(.+)");
-        patternInsert = Pattern.compile("^ADD\\s+(\\d+?)\\s+(.+)");
-        patternEdit = Pattern.compile("^EDIT\\s+(\\d+?)\\s+(.+)");
-        patternDel = Pattern.compile("^DELETE\\s+(\\d+?)$");
     }
 
 
     public void parseCommand(String inputStr) {
         String command = inputStr;
+        insertMatcher = patternInsert.matcher(inputStr);
+        addMatcher = patternAdd.matcher(inputStr);
+        editMatcher = patternEdit.matcher(inputStr);
+        delMatcher = patternDel.matcher(inputStr);
 
         if (inputStr.equals("QUIT")) {
             System.exit(0);
-        }
 
-        if (inputStr.equals("LIST")) {
+        } else if (inputStr.equals("LIST")) {
             showItems();
-            return;
-        }
 
-        //ADD n text
-        matcher = patternInsert.matcher(inputStr);
-        if (matcher.matches()) {
-            addItem(Integer.parseInt(matcher.group(1)), matcher.group(2));
-            return;
-        }
+        } else if (insertMatcher.matches()) { //ADD n text
+            addItem(Integer.parseInt(insertMatcher.group(1)), insertMatcher.group(2));
 
-        //ADD text
-        matcher = patternAdd.matcher(inputStr);
-        if (matcher.matches()) {
-            addItem(todoList.size(), matcher.group(1));
-            return;
-        }
+        } else if (addMatcher.matches()) { //ADD text
+            addItem(todoList.size(), addMatcher.group(1));
 
-        //Если список пуст, редактировать и удалять нечего
-        if (todoList.size() == 0) {
+        } else if (todoList.size() == 0) {   //Если список пуст, редактировать и удалять нечего
             System.out.println("\nСписок пуст\n");
-            return;
-        }
 
-        //EDIT n text
-        matcher = patternEdit.matcher(inputStr);
-        if (matcher.matches()) {
-            editItem(Integer.parseInt(matcher.group(1)), matcher.group(2));
-            return;
-        }
+        } else if (editMatcher.matches()) {   //EDIT n text
+            editItem(Integer.parseInt(editMatcher.group(1)), editMatcher.group(2));
 
-        //DELETE n
-        matcher = patternDel.matcher(inputStr);
-        if (matcher.matches()) {
-            delItem(Integer.parseInt(matcher.group(1)));
-            return;
+        } else if (delMatcher.matches()) {   //DELETE n
+            delItem(Integer.parseInt(delMatcher.group(1)));
+        } else {
+            showHelp();
         }
-        showHelp();
     }
 
 
