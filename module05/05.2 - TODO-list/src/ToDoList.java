@@ -6,18 +6,16 @@ public class ToDoList {
     private static ArrayList<String> todoList;
 
 
-    Pattern patternAdd = Pattern.compile("^ADD\\s+(.+)");
-    Pattern patternInsert = Pattern.compile("^ADD\\s+(\\d+?)\\s+(.+)");
-    Pattern patternEdit = Pattern.compile("^EDIT\\s+(\\d+?)\\s+(.+)");
-    Pattern patternDel = Pattern.compile("^DELETE\\s+(\\d+?)$");
-    Matcher addMatcher;
-    Matcher insertMatcher;
-    Matcher editMatcher;
-    Matcher delMatcher;
+    private final Pattern PATTERN_ADD = Pattern.compile("^ADD\\s+(.+)");
+    private final Pattern PATTERN_INSERT = Pattern.compile("^ADD\\s+(\\d+?)\\s+(.+)");
+    private final Pattern PATTERN_EDIT = Pattern.compile("^EDIT\\s+(\\d+?)\\s+(.+)");
+    private final Pattern PATTERN_DEL = Pattern.compile("^DELETE\\s+(\\d+?)$");
 
     ToDoList() {
         todoList = new ArrayList<String>() {{
             add("Принести воды");
+
+
             add("Позвать мышку");
             add("Покормить кошку");
             add("Заправить машину");
@@ -27,10 +25,10 @@ public class ToDoList {
 
     public void parseCommand(String inputStr) {
         String command = inputStr;
-        insertMatcher = patternInsert.matcher(inputStr);
-        addMatcher = patternAdd.matcher(inputStr);
-        editMatcher = patternEdit.matcher(inputStr);
-        delMatcher = patternDel.matcher(inputStr);
+        Matcher insertMatcher = PATTERN_INSERT.matcher(inputStr);
+        Matcher addMatcher = PATTERN_ADD.matcher(inputStr);
+        Matcher editMatcher = PATTERN_EDIT.matcher(inputStr);
+        Matcher delMatcher = PATTERN_DEL.matcher(inputStr);
 
         if (inputStr.equals("QUIT")) {
             System.exit(0);

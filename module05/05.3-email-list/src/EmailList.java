@@ -8,13 +8,11 @@ public class EmailList {
 
     //Паттерн для e-mail взял "рекомендованный" (пункт 5) отсюда:
     //https://howtodoinjava.com/regex/java-regex-validate-email-address/
-    static private String mailRegEx =
+    private static final String MAIL_REGEX =
             "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
 
-    Pattern patternAdd = Pattern.compile("^ADD\\s+(.+)");
-    Pattern patternDel = Pattern.compile("^DEL\\s+(.+)");
-    Matcher addMatcher;
-    Matcher delMatcher;
+    private static final Pattern PATTERN_ADD = Pattern.compile("^ADD\\s+(?<address>.+)");
+    private static final Pattern PATTERN_DEL = Pattern.compile("^DEL\\s+(?<address>.+)");
 
 
     EmailList() {
@@ -24,8 +22,8 @@ public class EmailList {
 
     public void parseCommand(String inputStr) {
         String command = inputStr;
-        addMatcher = patternAdd.matcher(inputStr);
-        delMatcher = patternDel.matcher(inputStr);
+        Matcher addMatcher = PATTERN_ADD.matcher(inputStr);
+        Matcher delMatcher = PATTERN_DEL.matcher(inputStr);
 
         if (inputStr.equals("EXIT")) {
             System.exit(0);
@@ -34,13 +32,13 @@ public class EmailList {
             showItems();
 
         } else if (addMatcher.matches()) { //ADD e-mail address
-            addItem(addMatcher.group(1));
+            addItem(addMatcher.group("address"));
 
         } else if (emailList.isEmpty()) {   //Если список пуст, удалять нечего
             System.out.println("\nСписок пуст\n");
 
         } else if (delMatcher.matches()) {   //DEL e-mail address
-            delItem(delMatcher.group(1));
+            delItem(delMatcher.group("address"));
 
         } else {
             showHelp();
@@ -71,15 +69,14 @@ public class EmailList {
         if (emailList.isEmpty()) {
             System.out.println("\nСписок пуст\n");
         } else {
-            for (Iterator iter = emailList.iterator(); iter.hasNext(); ) {
-                System.out.println(iter.next());
+            emailList.forEach(System.out::println);
             }
         }
-    }
+
 
 
     public static boolean isValid(String address) {
-        return address.matches(mailRegEx);
+        return address.matches(MAIL_REGEX);
     }
 
     public static void showHelp() {
