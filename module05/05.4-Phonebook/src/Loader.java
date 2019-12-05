@@ -16,13 +16,13 @@ public class Loader {
                 System.exit(0);
 
             } else if (command.equals("LIST")) {
-                phonebook.outContent();
+                phonebook.printContent();
 
             } else if (phonebook.isPhone(command)) {
-                phonebook.checkPhone(command);
+                phonebook.processAsAPhone(command);
 
             } else {  //если не номер, значит, абонент
-                phonebook.checkName(command);
+                phonebook.processAsAName(command);
             }
 
         }
