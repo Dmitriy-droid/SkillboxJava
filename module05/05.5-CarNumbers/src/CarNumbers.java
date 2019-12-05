@@ -1,4 +1,3 @@
-import javax.swing.border.AbstractBorder;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -9,7 +8,7 @@ public class CarNumbers {
 
     //Действующие у нас номера регионов для автомобильных номеров
     //Не знаю, нужно ли массивы констант набирать заглавными
-    private final String regions[] = {"01", "02", "03", "04", "05", "06", "07", "08", "09",
+    private static final String REGIONS[] = {"01", "02", "03", "04", "05", "06", "07", "08", "09",
             "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
             "21", "22", "23", "24", "25", "26", "27", "28", "29",
             "30", "31", "32", "33", "34", "35", "36", "37", "38", "39",
@@ -21,44 +20,40 @@ public class CarNumbers {
             "90", "91", "92", "93", "94", "95", "96", "97", "98", "99",
     };          //также впереди может быть добавлена 1 или 7, поэтому полный список сгенерим (getAllRegions)
 
-    private final String[] allowedSymbols = {"AAA", "BBB", "CCC", "EEE", "HHH", "KKK", "MMM",
+    private static final String[] ALLOWED_SYMBOLS = {"AAA", "BBB", "CCC", "EEE", "HHH", "KKK", "MMM",
             "OOO", "PPP", "TTT", "YYY", "XXX"};
 
-    private final String digits[] = {"001", "111", "222", "333", "444", "555", "666", "777", "888", "999"};
+    private static final String ALLOWED_DIGITS[] = {"001", "111", "222", "333", "444", "555", "666", "777", "888", "999"};
 
-    public int totalNumbers;
 
     ArrayList<String> specialNumbersArrList;
     HashSet<String> specialNumbersHashSet;
     TreeSet<String> specialNumbersTreeSet;
+    public int totalNumbers;
 
     CarNumbers() {
-        specialNumbersArrList = GenerateSpecialNumbersList();
+        specialNumbersArrList = generateSpecialNumbersList();
         totalNumbers = specialNumbersArrList.size();
-
-        specialNumbersHashSet = new HashSet<>();
-        specialNumbersHashSet.addAll(specialNumbersArrList);
-
-        specialNumbersTreeSet = new TreeSet<>();
-        specialNumbersTreeSet.addAll(specialNumbersArrList);
+        specialNumbersHashSet = new HashSet<>(specialNumbersArrList);
+        specialNumbersTreeSet = new TreeSet<>(specialNumbersArrList);
     }
 
-    public boolean isCarNumber(String text) {
+    public boolean isItCarNumber(String text) {
         return CAR_NUM_PATTERN.matcher(text).matches();
     }
 
 
     private ArrayList<String> getAllRegions() {
-//полный список номеров регионов - добавляются 1 и 7 спереди, с сортировкой
+//полный список номеров регионов - добавляются 1 и 7 спереди
         ArrayList<String> allRegsList = new ArrayList<>();
 
-        allRegsList.addAll(Arrays.asList(regions));
+        allRegsList.addAll(Arrays.asList(REGIONS));
 
-        for (String regNumber : regions) {
+        for (String regNumber : REGIONS) {
             allRegsList.add("1" + regNumber);
         }
 
-        for (String regNumber : regions) {
+        for (String regNumber : REGIONS) {
             allRegsList.add("7" + regNumber);
         }
 
@@ -66,73 +61,77 @@ public class CarNumbers {
     }
 
 
-    private ArrayList<String> GenerateSpecialNumbersList() {
+    private ArrayList<String> generateSpecialNumbersList() {
 
         ArrayList<String> list = new ArrayList<>();
         ArrayList<String> allRegions = getAllRegions();
         StringBuilder carNumber = new StringBuilder(9);  //в номере от 8 до 9 знаков
 
-        for (String letters : allowedSymbols) {
-            for (String dig : digits) {
+        for (String letters : ALLOWED_SYMBOLS) {
+            for (String digits : ALLOWED_DIGITS) {
                 for (String reg : allRegions) {
                     carNumber.replace(0, 9, "");
                     carNumber.append(letters);
-                    carNumber.insert(1, dig);
+                    carNumber.insert(1, digits);
                     carNumber.append(reg);
                     list.add(carNumber.toString());
-                    System.out.println(carNumber.toString());
                 }
             }
         }
+        Collections.sort(list);  //из-за добавлений 1 и 7 в номера региона не получилось просто сделать
+                                //отсортированный лист, пришлось сортировать в конце
         return list;
     }
 
-    /* Хотел сделать что-то вроде measureDuration (number, findDirect());
-       или measureDuration (number -> CarNumbers.findDirect(number))
-       т.е., функцию замера, в которую передаём методы поиска. Но что-то пока не получилось.
 
-      public boolean findDirect(String number) {
-           return specialNumbersArrList.contains(number);
-       }
+    Function<String, Boolean> tryFindDirectSearch = s -> specialNumbersArrList.contains(s);
+    Function<String, Boolean> tryFindBinarySearch = s -> Collections.binarySearch(specialNumbersArrList, s) >= 0;
+    Function<String, Boolean> tryFindTreeSetSearch = s -> specialNumbersTreeSet.contains(s);
+    Function<String, Boolean> tryFindHashSetSearch = s -> specialNumbersHashSet.contains(s);
 
-       public boolean findBinarySearch(String number) {
-           return Collections.binarySearch(specialNumbersArrList, number) >= 0;
-       }
 
-       public boolean findTreeSet (String number) {
-           return specialNumbersTreeSet.contains(number);
-       }
+    boolean isNumberFound;
 
-       public boolean findHashSet (String number) {
-           return specialNumbersHashSet.contains(number);
-       }
-   */
-    //Номеров генерится маловато (35280), поэтому взял System.nanoTime(),
-    // и даже в этом случае время HashSet = o
-    public void measureDuration(String number) {
-
-        long startDirect = System.nanoTime();
-        specialNumbersArrList.contains(number);
-        long findDirectTime = System.nanoTime() - startDirect;
-
-        long startBinary = System.nanoTime();
-        Collections.binarySearch(specialNumbersArrList, number);
-        long findBinaryTime = System.nanoTime() - startBinary;
-
-        long startTreeSet = System.nanoTime();
-        specialNumbersTreeSet.contains(number);
-        long findTreeSetTime = System.nanoTime() - startTreeSet;
-
-        long startHashSet = System.currentTimeMillis();
-        specialNumbersHashSet.contains(number);
-        long findHashSetTime = System.currentTimeMillis() - startHashSet;
-
-        System.out.println("Прямой перебор : " + findDirectTime);
-        System.out.println("Бинарный поиск : " + findBinaryTime);
-        System.out.println("TreeSet        : " + findTreeSetTime);
-        System.out.println("HashSet        : " + findHashSetTime);
-
+    long tryFind(String number, Function<String, Boolean> method) {
+        long start = System.nanoTime();
+        isNumberFound = method.apply(number);
+        return System.nanoTime() - start;
     }
 
+    public void measureDuration(String number) {
+
+        long findDirectTime = tryFind(number, tryFindDirectSearch);
+        boolean isFoundDirect = isNumberFound;
+
+        long findBinaryTime = tryFind(number, tryFindBinarySearch);
+        boolean isFoundBinary = isNumberFound;
+
+        long findTreeSetTime = tryFind(number, tryFindTreeSetSearch);
+        boolean isFoundTreeSet = isNumberFound;
+
+        long findHashSetTime = tryFind(number, tryFindHashSetSearch);
+        boolean isFoundHashSet = isNumberFound;
+
+        if (isFoundDirect) {
+            System.out.println("Прямой перебор : " + findDirectTime);
+        } else {
+            System.out.println("Прямой перебор : не найден");
+        }
+        if (isFoundBinary) {
+            System.out.println("Бинарный поиск : " + findBinaryTime);
+        } else {
+            System.out.println("Бинарный поиск : не найден");
+        }
+        if (isFoundTreeSet) {
+            System.out.println("TreeSet        : " + findTreeSetTime);
+        } else {
+            System.out.println("TreeSet : не найден");
+        }
+        if (isFoundHashSet) {
+            System.out.println("HashSet        : " + findHashSetTime);
+        } else {
+            System.out.println("HashSet : не найден");
+        }
+    }
 
 }

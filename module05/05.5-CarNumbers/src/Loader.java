@@ -16,7 +16,7 @@ public class Loader {
             } else if (inText.equals("EXIT")) {
                 System.exit(0);
 
-            } else if (carNumbers.isCarNumber(inText)) {
+            } else if (carNumbers.isItCarNumber(inText)) {
                 System.out.println("Всего номеров: " + carNumbers.totalNumbers);
                 carNumbers.measureDuration(inText);
             } else {
