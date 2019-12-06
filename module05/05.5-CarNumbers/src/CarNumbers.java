@@ -29,11 +29,9 @@ public class CarNumbers {
     ArrayList<String> specialNumbersArrList;
     HashSet<String> specialNumbersHashSet;
     TreeSet<String> specialNumbersTreeSet;
-    public int totalNumbers;
 
     CarNumbers() {
         specialNumbersArrList = generateSpecialNumbersList();
-        totalNumbers = specialNumbersArrList.size();
         specialNumbersHashSet = new HashSet<>(specialNumbersArrList);
         specialNumbersTreeSet = new TreeSet<>(specialNumbersArrList);
     }
@@ -42,6 +40,7 @@ public class CarNumbers {
         return CAR_NUM_PATTERN.matcher(text).matches();
     }
 
+    public int getTotalNumbers() { return specialNumbersHashSet.size(); }
 
     private ArrayList<String> getAllRegions() {
 //полный список номеров регионов - добавляются 1 и 7 спереди
@@ -90,48 +89,44 @@ public class CarNumbers {
     Function<String, Boolean> tryFindHashSetSearch = s -> specialNumbersHashSet.contains(s);
 
 
-    boolean isNumberFound;
-
-    long tryFind(String number, Function<String, Boolean> method) {
+    private final MeasureResult tryFind(String number, Function<String, Boolean> method) {
         long start = System.nanoTime();
-        isNumberFound = method.apply(number);
-        return System.nanoTime() - start;
+        boolean isNumberFound = method.apply(number);
+        long duration =  System.nanoTime() - start;
+
+        return new MeasureResult(isNumberFound, duration);
     }
+
 
     public void measureDuration(String number) {
 
-        long findDirectTime = tryFind(number, tryFindDirectSearch);
-        boolean isFoundDirect = isNumberFound;
+        var results = new LinkedHashMap<String, MeasureResult>();
 
-        long findBinaryTime = tryFind(number, tryFindBinarySearch);
-        boolean isFoundBinary = isNumberFound;
+        results.put("Прямой перебор", tryFind(number, tryFindDirectSearch));
+        results.put("Бинарный поиск", tryFind(number, tryFindBinarySearch));
+        results.put("Поиск TreeSet", tryFind(number, tryFindTreeSetSearch));
+        results.put("Поиск HashSet", tryFind(number, tryFindHashSetSearch));
 
-        long findTreeSetTime = tryFind(number, tryFindTreeSetSearch);
-        boolean isFoundTreeSet = isNumberFound;
 
-        long findHashSetTime = tryFind(number, tryFindHashSetSearch);
-        boolean isFoundHashSet = isNumberFound;
-
-        if (isFoundDirect) {
-            System.out.println("Прямой перебор : " + findDirectTime);
-        } else {
-            System.out.println("Прямой перебор : не найден");
+        for (var e : results.entrySet()) {
+            if (e.getValue().isFound) {
+                System.out.printf("%15s: %d%n", e.getKey(), e.getValue().nanoTime);
+            } else {
+                System.out.printf("%15s: не найден%n", e.getKey());
+            }
         }
-        if (isFoundBinary) {
-            System.out.println("Бинарный поиск : " + findBinaryTime);
-        } else {
-            System.out.println("Бинарный поиск : не найден");
-        }
-        if (isFoundTreeSet) {
-            System.out.println("TreeSet        : " + findTreeSetTime);
-        } else {
-            System.out.println("TreeSet : не найден");
-        }
-        if (isFoundHashSet) {
-            System.out.println("HashSet        : " + findHashSetTime);
-        } else {
-            System.out.println("HashSet : не найден");
+    }
+
+    private static class MeasureResult {
+        final boolean isFound;
+        final long nanoTime;
+
+        // !! конструктора по умолчанию нет
+        MeasureResult(boolean isFound, long nanoTime) {
+            this.isFound = isFound;
+            this.nanoTime = nanoTime;
         }
     }
 
 }
+

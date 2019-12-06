@@ -17,13 +17,12 @@ public class Loader {
                 System.exit(0);
 
             } else if (carNumbers.isItCarNumber(inText)) {
-                System.out.println("Всего номеров: " + carNumbers.totalNumbers);
+                System.out.println("Всего номеров: " + carNumbers.getTotalNumbers());
                 carNumbers.measureDuration(inText);
             } else {
                 System.out.println("\nНеправильный формат номера\n");
             }
         }
     }
-
 
 }
