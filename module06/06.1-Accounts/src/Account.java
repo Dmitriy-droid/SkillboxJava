@@ -1,0 +1,34 @@
+import java.time.LocalDateTime;
+
+public class Account
+{
+    protected double amount;
+
+    Account() {
+        amount = 0.;
+    }
+
+    public void showAmount() {
+        System.out.println("На счете: " + amount);
+    }
+
+    public void addMoney(double amount) {
+            if (amount > 0.) {
+                this.amount += amount;
+                showAmount();
+            } else {
+                System.out.println("Сумма должна быть положительной.");
+            }
+    }
+
+    public void withdrawMoney(double amount) {
+        if (amount <= this.amount) {
+            this.amount -= amount;
+
+        } else {
+            System.out.println("Сумма снятия больше, чем на счету.");
+        }
+        showAmount();
+    }
+
+}
