@@ -1,23 +1,19 @@
 public class Card extends Account {
+    public static final double WITHDRAW_PERCENT = 0.01;
     private double withRate;
 
     Card() {
-        super();
     }
 
+    @Override
     public void withdrawMoney(double amount) {
         withRate = amount + getRate(amount);
-        if ((withRate) <= this.amount) {
-            this.amount -= withRate;
-            System.out.println("Сумма снятия с процентом :" + withRate);
-        } else {
-            System.out.println("Сумма снятия с учётом процента (" + withRate + ") больше, чем на счету.");
-        }
-        showAmount();
+        System.out.println("Сумма снятия с процентом :" + withRate);
+        super.withdrawMoney(withRate);
     }
 
     private double getRate(double amount) {
-        return amount * 0.01;
+        return amount * WITHDRAW_PERCENT;
     }
 
 }
