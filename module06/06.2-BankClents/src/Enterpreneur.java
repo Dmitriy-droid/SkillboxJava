@@ -23,12 +23,10 @@ public class Enterpreneur extends Client {
         }
 
         super.deposit(amount);
-        showAccount();
     }
 
     @Override
     public void withdraw(double amount) {
         super.withdraw(amount);
-        showAccount();
     }
 }

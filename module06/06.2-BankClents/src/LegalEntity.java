@@ -15,14 +15,12 @@ public class LegalEntity extends Client {
     @Override
     public void deposit(double amount) {
         super.deposit(amount);
-        showAccount();
     }
 
     @Override
     public void withdraw(double amount) {
         amount = amount * (1 + WITHDRAW_RATE);
         super.withdraw(amount);
-        showAccount();
     }
 
 }

@@ -10,16 +10,4 @@ public class Individual extends Client {
         System.out.println("На счёте: " + getAccount());
     }
 
-    @Override
-    public void deposit(double amount) {
-        super.deposit(amount);
-        showAccount();
-    }
-
-    @Override
-    public void withdraw(double amount) {
-        super.withdraw(amount);
-        showAccount();
-    }
-
 }

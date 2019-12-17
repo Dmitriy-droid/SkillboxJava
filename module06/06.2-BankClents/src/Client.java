@@ -15,6 +15,7 @@ public abstract class Client {
         } else {
             System.out.println("Сумма должна быть больше 0");
         }
+        showAccount();
     }
 
     protected void withdraw(double amount) {
@@ -23,6 +24,7 @@ public abstract class Client {
         } else {
             System.out.println("Недостаточно средств");
         }
+        showAccount();
     }
 
 
