@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -7,17 +6,6 @@ public class Company {
 
     private String companyName;
     private int income;
-
-    //ограничения по фиксированным зарплатам в компании.
-    // Конечно, для разных компаний должны быть свои правила
-    public static final double LOWEST_OPERATOR_SALARY = 45000;
-    public static final double MAX_OPERATOR_SALARY = 98000;
-    public static final double LOWEST_MANAGER_SALARY = 74000;
-    public static final double MAX_MANAGER_SALARY = 140000;
-    public static final double LOWEST_TOP_MANAGER_SALARY = 270000;
-    public static final double MAX_TOP_MANAGER_SALARY = 480000;
-
-    enum EmployeeType {OPERATOR, MANAGER, TOP_MANAGER}
 
     public TreeSet<AbstractEmployee> staff; //будет сразу отсортирован по зарплате
 
@@ -28,30 +16,17 @@ public class Company {
     }
 
 
-    public void hire(String name, EmployeeType type) {
-        AbstractEmployee person;
-
-        switch (type) {
-            case TOP_MANAGER:
-                person = new TopManager(name, this);
-                break;
-            case MANAGER:
-                person = new Manager(name);
-                break;
-            default:
-                person = new Operator(name);
-                break;
-        }
+    public void hire(AbstractEmployee person) {
         staff.add(person);
     }
 
-    public void hireAll(ArrayList<String> list, EmployeeType type) {
-        for (String e : list) {
-            hire(e, type);
+    public void hireAll(ArrayList<AbstractEmployee> list) {
+        for (AbstractEmployee e : list) {
+            hire(e);
         }
     }
 
-    public void fire(Employee e) {
+    public void fire(AbstractEmployee e) {
         if (staff.contains(e)) { //вроде бы это лишнее
             staff.remove(e);
         }
@@ -71,14 +46,21 @@ public class Company {
     }
 
 
-    public ArrayList<AbstractEmployee> getTopSalaryStaff(int count) {
+    private ArrayList<AbstractEmployee> getSalaryStaff(int count, boolean isTop) {
 
         int numberOfEmloyees = staff.size();
+
         if (count > numberOfEmloyees) {
             count = numberOfEmloyees;
         }
         ArrayList<AbstractEmployee> list = new ArrayList<>(count);
-        Iterator<AbstractEmployee> itr = staff.descendingIterator();
+        Iterator<AbstractEmployee> itr;
+
+        if (isTop) {
+            itr = staff.descendingIterator();
+        } else {
+            itr = staff.iterator();
+        }
 
         for (int i = 0; i < count; i++) {
             list.add(itr.next());
@@ -86,18 +68,12 @@ public class Company {
         return list;
     }
 
-    public ArrayList<AbstractEmployee> getLowestSalaryStaff(int count) {
-        int numberOfEmloyees = staff.size();
-        if (count > numberOfEmloyees) {
-            count = numberOfEmloyees;
-        }
-        ArrayList<AbstractEmployee> list = new ArrayList<>(count);
-        Iterator<AbstractEmployee> itr = staff.iterator();
+    public ArrayList<AbstractEmployee> getTopSalaryStaff(int count) {
+        return getSalaryStaff(count, true);
+    }
 
-        for (int i = 0; i < count; i++) {
-            list.add(itr.next());
-        }
-        return list;
+    public ArrayList<AbstractEmployee> getLowestSalaryStaff(int count) {
+        return getSalaryStaff(count, false);
     }
 
 }

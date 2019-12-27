@@ -1,14 +1,20 @@
 public class Operator extends AbstractEmployee {
 
+    private final double LOWEST_OPERATOR_SALARY = 45000;
+    private final double MAX_OPERATOR_SALARY = 98000;
 
     Operator(String name) {
         super(name);
-        setSalary(Company.LOWEST_OPERATOR_SALARY, Company.MAX_OPERATOR_SALARY);
+        setFixedSalary(LOWEST_OPERATOR_SALARY, MAX_OPERATOR_SALARY);
+    }
+
+    public static AbstractEmployee createRandom(String name) {
+        return new Operator(name);
     }
 
     @Override
     public double getMonthSalary() {
-        return getSalary();
+        return getFixedSalary();
     }
 
 }

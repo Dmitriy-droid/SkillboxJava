@@ -1,6 +1,5 @@
-public abstract class AbstractEmployee implements Employee, Comparable<AbstractEmployee> {
-    //кажется, для минимальных условий задачи хватало интерфейса Employee, но я как-то сразу упёрся в то,
-//что у сотрудников должны быть имена - и поехало...
+public abstract class AbstractEmployee implements Comparable<AbstractEmployee> {
+
     private String name;
     private double salary;
 
@@ -12,18 +11,20 @@ public abstract class AbstractEmployee implements Employee, Comparable<AbstractE
         return name;
     }
 
-    public double getSalary() {
+    public abstract double getMonthSalary();
+
+    public double getFixedSalary() {
         return salary;
     }
 
-    protected void setSalary(double lowBound, double topBound) {
+    protected void setFixedSalary(double lowBound, double topBound) {
         salary = lowBound + (Math.random() * (topBound - lowBound));
     }
 
     public int compareTo(AbstractEmployee anotherEmployee) {
-        if (this.getSalary() > anotherEmployee.getSalary())
+        if (this.getMonthSalary() > anotherEmployee.getMonthSalary())
             return 1;
-        else if (this.getSalary() == anotherEmployee.getSalary())
+        else if (this.getMonthSalary() == anotherEmployee.getMonthSalary())
             return 0;
         else
             return -1;

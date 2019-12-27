@@ -9,15 +9,15 @@ public class Loader {
         int currentNameInList = 0;
 
         for (int i = currentNameInList; i < currentNameInList + 180; i++) {
-            company.hire(NameList.names[i], Company.EmployeeType.OPERATOR);
+            company.hire(Operator.createRandom(NameList.names[i]));
         }
 
         for (int i = currentNameInList; i < currentNameInList + 80; i++) {
-            company.hire(NameList.names[i], Company.EmployeeType.MANAGER);
+            company.hire(Manager.createRandom(NameList.names[i]));
         }
 
         for (int i = currentNameInList; i < currentNameInList + 10; i++) {
-            company.hire(NameList.names[i], Company.EmployeeType.TOP_MANAGER);
+            company.hire(TopManager.createRandom(NameList.names[i], company));
         }
 
         ArrayList<AbstractEmployee> topSalary = company.getTopSalaryStaff(15);
@@ -25,12 +25,12 @@ public class Loader {
 
         System.out.println("\n15 самых низких зарплат\n");
         for (AbstractEmployee person : lowestSalary) {
-            System.out.println(person.getName() + " - " + (int) person.getSalary());
+            System.out.println(person.getName() + " - " + (int) person.getFixedSalary());
         }
 
         System.out.println("\n15 самых высоких зарплат\n");
         for (AbstractEmployee person : topSalary) {
-            System.out.println(person.getName() + " - " + (int) person.getSalary());
+            System.out.println(person.getName() + " - " + (int) person.getFixedSalary());
         }
 
     }
