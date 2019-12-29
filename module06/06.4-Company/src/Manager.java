@@ -1,10 +1,10 @@
 public class Manager extends AbstractEmployee {
 
-    private final double LOWEST_MANAGER_SALARY = 74000;
-    private final double MAX_MANAGER_SALARY = 140000;
+    private final static double LOWEST_MANAGER_SALARY = 74000;
+    private final static double MAX_MANAGER_SALARY = 140000;
 
-    private final double MAX_EARN_MONEY = 200000.; //тут надо регулировать
-    private final double MANAGER_BONUS_PERCENT = .05;
+    private final static double MAX_EARN_MONEY = 200000.; //тут надо регулировать
+    private final static double MANAGER_BONUS_PERCENT = .05;
     double earnedMoney;
 
     Manager(String name) {
@@ -13,10 +13,9 @@ public class Manager extends AbstractEmployee {
         setFixedSalary(LOWEST_MANAGER_SALARY, MAX_MANAGER_SALARY);
     }
 
-    public static AbstractEmployee createRandom(String name) {
+    public static Manager createRandom(String name) {
         return new Manager(name);
     }
-
 
     @Override
     public double getMonthSalary() {

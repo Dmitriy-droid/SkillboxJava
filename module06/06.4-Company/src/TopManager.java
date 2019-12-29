@@ -1,10 +1,10 @@
 public class TopManager extends AbstractEmployee {
 
     Company company;
-    private final int BONUS_PERCENT = 150;
-    private final double LOWEST_BONUS_INCOME = 10000000.;
-    private final double LOWEST_TOP_MANAGER_SALARY = 270000;
-    private final double MAX_TOP_MANAGER_SALARY = 480000;
+    private final static int BONUS_PERCENT = 150;
+    private final static double LOWEST_BONUS_INCOME = 10000000.;
+    private final static double LOWEST_TOP_MANAGER_SALARY = 270000;
+    private final static double MAX_TOP_MANAGER_SALARY = 480000;
 
 
     TopManager(String name, Company company) {
@@ -13,7 +13,7 @@ public class TopManager extends AbstractEmployee {
         this.company = company;
     }
 
-    public static AbstractEmployee createRandom(String name, Company company) {
+    public static TopManager createRandom(String name, Company company) {
         return new TopManager(name, company);
     }
 
