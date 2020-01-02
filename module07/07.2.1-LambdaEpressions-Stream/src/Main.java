@@ -1,32 +1,23 @@
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Stream;
 
 public class Main {
     private static String staffFile = "data/staff.txt";
-    private static String dateFormat = "dd.MM.yyyy";
 
     public static void main(String[] args) {
         ArrayList<Employee> staff = loadStaffFromFile();
 
-        //Вообще, этот вариант мне кажется симпатичнее
-        //Collections.sort(staff, (Comparator.comparing(Employee::getSalary))
-        // .thenComparing(Employee::getName));
-        //но если нужно именно в виде лямбд
-
-        Collections.sort(staff, (
-                Comparator
-                        .<Employee, Integer>comparing(e -> e.getSalary())
-                        .thenComparing(e -> e.getName())
-        ));
-
-        for (Employee employee : staff) {
-            System.out.println(employee);
-        }
-
+        System.out.print("Обладатель максимальной зарплаты в 2017 году - ");
+        staff.stream()
+                .filter(e -> e.getWorkStart().getYear() == 2017) //здесь не стал делать переменную, а то и в
+                                                    //выводимом тексте выше придётся городить вставку правильного года
+                .max(Comparator.comparing(Employee::getSalary))
+                .ifPresent(System.out::println);
     }
 
     private static ArrayList<Employee> loadStaffFromFile() {
@@ -42,8 +33,7 @@ public class Main {
                 staff.add(new Employee(
                         fragments[0],
                         Integer.parseInt(fragments[1]),
-                        (new SimpleDateFormat(dateFormat)).parse(fragments[2])
-                ));
+                        (LocalDate.parse(fragments[2], DateTimeFormatter.ofPattern(Employee.DATE_FORMAT)))));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
