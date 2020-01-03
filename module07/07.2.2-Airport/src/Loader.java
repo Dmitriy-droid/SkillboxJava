@@ -17,14 +17,9 @@ public class Loader {
         Date now = calendar.getTime();
         calendar.add(HOUR, 2);
         Date plusTwoHours = calendar.getTime();
-        List<Flight> allTerminalsFlights = new ArrayList<>();
 
-        for (Terminal terminal : terminals) {
-            List<Flight> listFlights = terminal.getFlights();
-            allTerminalsFlights.addAll(listFlights);
-        }
-
-        allTerminalsFlights.stream()
+        terminals.stream()
+                .flatMap(t -> t.getFlights().stream())
                 .filter(flight -> flight.getType() == Flight.Type.DEPARTURE)
                 .filter(flight -> (
                         flight.getDate().after(now) &&
