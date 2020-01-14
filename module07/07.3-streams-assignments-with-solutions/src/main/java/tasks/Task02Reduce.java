@@ -1,9 +1,7 @@
 package tasks;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.stream.Stream;
+import java.util.stream.IntStream;
 
 public class Task02Reduce {
 
@@ -32,8 +30,35 @@ public class Task02Reduce {
     public static Integer multiply(List<Integer> linkedListOfNumbers) {
 
         return linkedListOfNumbers.stream()
-                .reduce((i, j) -> i * j)    //не могу понять это волшебное превращение из Stream в Optional после reduce
+                .reduce((i, j) -> i * j)
                 .filter(x -> x <= 100)
                 .orElse(-1);
     }
+
+    /**
+     * Найти среднее чисел в массиве, или вернуть исключение, если массив пустой.
+     * <p>
+     * см. Стримы для примитивов в https://annimon.com/article/2778
+     * <p>
+     * Понадобиться:
+     * - IntStream::of
+     * - IntStream::average
+     * - Optional:orElseThrow
+     *
+     * @param numbers
+     * @return
+     */
+    public static double findAverage(int[] numbers) {
+
+        return IntStream.of(numbers)
+                .average()
+                .orElseThrow(EmptyArrayException::new);
+    }
+
+    public static class EmptyArrayException extends RuntimeException {
+        public EmptyArrayException() {
+            super("Error. The passed array is empty.");
+        }
+    }
+
 }

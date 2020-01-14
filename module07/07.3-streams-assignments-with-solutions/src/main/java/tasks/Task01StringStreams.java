@@ -35,8 +35,8 @@ class Task01StringStreams {
      * - Collectors.joining
      */
     static String replaceWordsOnLength(String str) { //Здесь возвращался Object, но и со String
-                                                     //работает
-        return  Stream.of(str.split("\\s+"))
+        //работает
+        return Stream.of(str.split("\\s+"))
                 .map(s -> Integer.toString((new String(s)).length()))
                 .collect(Collectors.joining(" "));
     }
