@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <properties>
+        <property name="LOG_PATTERN">%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</property>
+    </properties>
+
+    <appenders>
+        <Console name="STDOUT" follow="true" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+        <File name="LogNormalInputFile" fileName="logs/app_normal.log" append="false">#Этот лог пусть перезаписывается
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </File>
+        <File name="LogWrongInputFile" fileName="logs/app_wrong_input.log" append="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </File>
+        <File name="LogErrorsFile" fileName="logs/app_errors.log" append="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </File>
+    </appenders>
+
+    <loggers>
+        <logger name="normalInput" level="info" additivity="false">
+            <appender-ref ref="LogNormalInputFile" level="info"/>
+        </logger>
+        <logger name="wrongInput" level="info" additivity="false">
+            <appender-ref ref="LogWrongInputFile" level="warn"/>
+        </logger>
+        <logger name="errors" level="info">
+            <appender-ref ref="LogErrorsFile" level="error"/>
+        </logger>
+        <root level="ERROR">
+            <appender-ref ref="STDOUT"/>
+        </root>
+    </loggers>
+</configuration>
