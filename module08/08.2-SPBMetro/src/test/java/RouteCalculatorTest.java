@@ -2,8 +2,26 @@ import core.Line;
 import core.Station;
 import junit.framework.TestCase;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+/**
+ * Metro scheme that used in tests:
+ * <pre>{@code
+ *
+ *            Первая      Вторая
+ *              11          21
+ *              ^           ^
+ *              ^           ^
+ *            12/31 ->->-> 32/22  Третья
+ *              ^           ^
+ *              ^           ^
+ *              13          23
+ *
+ * }</pre>
+ */
 
 public class RouteCalculatorTest extends TestCase {
 
@@ -52,62 +70,75 @@ public class RouteCalculatorTest extends TestCase {
 
 
     public void testCalculateDuration() {
-        List<Station> route = new ArrayList<>();
-
-        route.add(stIndex.getStation("11"));
-        route.add(stIndex.getStation("12"));
-        route.add(stIndex.getStation("31"));
-        route.add(stIndex.getStation("32"));
-
-        double actual = RouteCalculator.calculateDuration(route);
-        double expected = 8.5;
-        assertEquals(expected, actual);
+        assertEquals(8.5, RouteCalculator.calculateDuration(makeRoute("11 -> 12 -> 31 -> 32")));
     }
 
 
     public void testGetShortestRouteOnTheLine() {
-        List<Station> expected = new ArrayList() {{
-            add(stIndex.getStation("21"));
-            add(stIndex.getStation("22"));
-            add(stIndex.getStation("23"));
-        }};
-
         RouteCalculator routeCalculator = new RouteCalculator(stIndex);
-        List<Station> actual = routeCalculator.getShortestRoute(
-                stIndex.getStation("21"), stIndex.getStation("23"));
-        assertEquals("On the Line: ", expected, actual);
+        assertEquals("On the Line: ", makeRoute("21 -> 22 -> 23"),
+                routeCalculator.getShortestRoute(stIndex.getStation("21"), stIndex.getStation("23")));
+    }
+
+    public void testGetShortestRouteOnTheLineReverse() {
+        RouteCalculator routeCalculator = new RouteCalculator(stIndex);
+        assertEquals("On the Line - Reverse: ", makeRoute("23 -> 22 -> 21"),
+                routeCalculator.getShortestRoute(stIndex.getStation("23"), stIndex.getStation("21")));
     }
 
     public void testGetShortestRouteWithOneConnection() {
-        List<Station> expected = new ArrayList() {{
-            add(stIndex.getStation("11"));
-            add(stIndex.getStation("12"));
-            add(stIndex.getStation("31"));
-            add(stIndex.getStation("32"));
-        }};
-
         RouteCalculator routeCalculator = new RouteCalculator(stIndex);
-        List<Station> actual = routeCalculator.getShortestRoute(
-                stIndex.getStation("11"), stIndex.getStation("32"));
-        assertEquals("With one connection: ", expected, actual);
+        assertEquals("With one connection: ", makeRoute("11 -> 12 -> 31 -> 32"),
+                routeCalculator.getShortestRoute(stIndex.getStation("11"), stIndex.getStation("32")));
     }
 
     public void testGetShortestRouteWithTwoConnection() {
-        List<Station> expected = new ArrayList() {{
-            add(stIndex.getStation("11"));
-            add(stIndex.getStation("12"));
-            add(stIndex.getStation("31"));
-            add(stIndex.getStation("32"));
-            add(stIndex.getStation("22"));
-            add(stIndex.getStation("23"));
-        }};
-
         RouteCalculator routeCalculator = new RouteCalculator(stIndex);
-        List<Station> actual = routeCalculator.getShortestRoute(
-                stIndex.getStation("11"), stIndex.getStation("23"));
-        assertEquals("With two connection: ", expected, actual);
+        assertEquals("With two connection: ", makeRoute("11 -> 12 -> 31 -> 32 -> 22 -> 23"),
+                routeCalculator.getShortestRoute(stIndex.getStation("11"), stIndex.getStation("23")));
     }
 
+
+    public void testGetRouteViaConnectedLine()
+            throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        RouteCalculator routeCalculator = new RouteCalculator(stIndex);
+        Method method = RouteCalculator.class.getDeclaredMethod
+                ("getRouteViaConnectedLine", Station.class, Station.class);
+        method.setAccessible(true);
+        assertEquals(makeRoute("31 -> 32"), method.invoke(routeCalculator,
+                stIndex.getStation("12"), stIndex.getStation("22")));
+    }
+
+
+    public void testGetRouteWithOneConnectionWithEqualStationPassed()
+            throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        RouteCalculator routeCalculator = new RouteCalculator(stIndex);
+        Method method = RouteCalculator.class.getDeclaredMethod
+                ("getRouteWithOneConnection", Station.class, Station.class);
+        method.setAccessible(true);
+        assertNull(method.invoke(
+                routeCalculator, stIndex.getStation("11"), stIndex.getStation("11")));
+    }
+
+
+    public void testGetRouteWithTwoConnectionsWithEqualStationPassed()
+            throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        RouteCalculator routeCalculator = new RouteCalculator(stIndex);
+        Method method = RouteCalculator.class.getDeclaredMethod
+                ("getRouteWithTwoConnections", Station.class, Station.class);
+        method.setAccessible(true);
+        assertNull((List<Station>) method.invoke(
+                routeCalculator, stIndex.getStation("11"), stIndex.getStation("11")));
+    }
+
+    List<Station> makeRoute(String routeStr) {
+        List<Station> route = new ArrayList<>();
+
+        for (String stationStr : routeStr.split(" -> ")) {
+            route.add(stIndex.getStation(stationStr));
+        }
+        return route;
+    }
 
     @Override
     protected void tearDown() throws Exception {

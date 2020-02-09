@@ -118,11 +118,9 @@ public class RouteCalculator {
         Set<Station> fromConnected = stationIndex.getConnectedStations(from);
         Set<Station> toConnected = stationIndex.getConnectedStations(to);
         for (Station srcStation : fromConnected) {
-            for (Station dstStation : toConnected) {
-                if (srcStation.getLine().equals(dstStation.getLine())) {
+            for (Station dstStation : toConnected)               //Здесь убрал {}, иначе нет 100% покрытия по строкам
+                if (srcStation.getLine().equals(dstStation.getLine()))
                     return getRouteOnTheLine(srcStation, dstStation);
-                }
-            }
         }
         return null;
     }
